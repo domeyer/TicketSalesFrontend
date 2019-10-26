@@ -16,8 +16,8 @@ public class Main extends Application {
         MainView view = new MainView();
         Scene scene = new Scene(view.getView());
         primaryStage.setScene(scene);
-        primaryStage.setWidth(250);
-        primaryStage.setHeight(250);
+        primaryStage.setWidth(800);
+        primaryStage.setHeight(600);
         primaryStage.show();
 
     }
