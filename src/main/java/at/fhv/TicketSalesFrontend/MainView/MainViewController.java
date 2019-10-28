@@ -19,7 +19,8 @@ public class MainViewController implements Initializable {
 
 
     //init fxml cols and view
-    @FXML private ComboBox cbGenre;
+    @FXML private Button btClear;
+    @FXML private ComboBox<String> cbGenre;
     @FXML private DatePicker dpStart, dpEnd;
     @FXML private TableView<EventDto> tfEvent;
     @FXML private TextField txfActor,txfEvent;
@@ -27,7 +28,6 @@ public class MainViewController implements Initializable {
     //init observable list for tf
     private ObservableList<EventDto> listOfEvents, sortHelper;
     private ArrayList<EventDto> allEvents;
-    private boolean tfActorEmpty, tfEventEmpty = true;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //controller.getAllEventForDate();
@@ -56,18 +56,24 @@ public class MainViewController implements Initializable {
                     LocalDate maxDate = dpEnd.getValue();
                     String actor = txfActor.getText().toLowerCase();
                     String event = txfEvent.getText().toLowerCase();
+                    String genre = cbGenre.getSelectionModel().getSelectedItem();
 
                     // get final values != null
+                    final String genreVal = genre == null ? "" : genre;
                     final LocalDate finalMin = minDate == null ? LocalDate.MIN : minDate;
                     final LocalDate finalMax = maxDate == null ? LocalDate.MAX : maxDate;
 
-                    // values for openDate need to be in the interval [finalMin, finalMax]
-                    return ti -> !finalMin.isAfter(ti.getDate()) && !finalMax.isBefore(ti.getDate()) && ti.getActor().toLowerCase().contains(actor) && ti.getEvent().toLowerCase().contains(event);
+                    //return matching values
+                    return ti -> !finalMin.isAfter(ti.getDate()) && !finalMax.isBefore(ti.getDate()) && ti.getActor().toLowerCase().contains(actor) && ti.getEvent().toLowerCase().contains(event) && ti.getGenre().toLowerCase().contains(genreVal.toLowerCase());
+
                 },
                 dpStart.valueProperty(),
                 txfActor.textProperty(),
                 txfEvent.textProperty(),
+                cbGenre.valueProperty(),
                 dpEnd.valueProperty()));
+
+
 
 
         //wrap filtered list in sorted list
@@ -77,7 +83,14 @@ public class MainViewController implements Initializable {
         sortedData.comparatorProperty().bind(tfEvent.comparatorProperty());
         //Add sorted (and filtered) data to the table.
         tfEvent.setItems(sortedData);
-        //liste zurückhalten damit auf sortierter weiter sortiert wird !!!!!
+
+        btClear.setOnAction(event -> {
+            txfEvent.clear();
+            txfActor.clear();
+            dpStart.getEditor().clear();
+            dpEnd.getEditor().clear();
+            cbGenre.getSelectionModel().clearSelection();
+        });
 
 
 
